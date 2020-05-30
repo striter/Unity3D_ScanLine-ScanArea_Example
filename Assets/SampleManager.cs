@@ -4,15 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SampleManager : MonoBehaviour {
-
-
     public Color Scan_Color;
     public float Scan_Width = 1f;
     public float Scan_Duration = 1.5f;
     public float Scan_Range = 20f;
     public Texture Scan_Texure;
     public float Scan_Scale = 1f;
-
 
     public Color Area_FillColor = Color.grey;
     public Color Area_EdgeColor = Color.blue;

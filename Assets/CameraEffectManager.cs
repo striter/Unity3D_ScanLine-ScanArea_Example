@@ -8,7 +8,6 @@ public class CameraEffectManager :MonoBehaviour
 {
     List<CameraEffectBase> m_CameraEffects=new List<CameraEffectBase>();
     public Camera m_Camera { get; protected set; }
-    public bool m_MainTextureCamera { get; private set; }
     public bool m_DepthToWorldRebuild { get; private set; } = false;
     public bool m_DoGraphicBlitz { get; private set; } = false;
     RenderTexture m_BlitzTempTexture1, m_BlitzTempTexture2;
@@ -18,7 +17,6 @@ public class CameraEffectManager :MonoBehaviour
         m_Camera = GetComponent<Camera>();
         m_Camera.depthTextureMode = DepthTextureMode.None;
         m_DepthToWorldRebuild = false;
-        m_MainTextureCamera = false;
         m_DoGraphicBlitz = false;
         m_BlitzTempTexture1 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
         m_BlitzTempTexture2 = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
@@ -53,9 +51,6 @@ public class CameraEffectManager :MonoBehaviour
     }
 
     #region Calculations
-    public float Get01Depth(Vector3 target) => m_Camera.WorldToViewportPoint(target).z / (m_Camera.farClipPlane - m_Camera.nearClipPlane);
-    public float Get01DepthLength(float length) => length / (m_Camera.farClipPlane - m_Camera.nearClipPlane);
-    static readonly int m_GlobalCameraDepthTextureMode = Shader.PropertyToID("_CameraDepthTextureMode");
     static readonly int ID_FrustumCornersRayBL = Shader.PropertyToID("_FrustumCornersRayBL");
     static readonly int ID_FrustumCornersRayBR = Shader.PropertyToID("_FrustumCornersRayBR");
     static readonly int ID_FrustumCornersRayTL = Shader.PropertyToID("_FrustumCornersRayTL");
@@ -135,7 +130,6 @@ public class CameraEffectManager :MonoBehaviour
 
     protected void ResetCameraEffectParams()
     {
-        Shader.SetGlobalInt(m_GlobalCameraDepthTextureMode, m_MainTextureCamera ? 1 : 0);
         m_DoGraphicBlitz = false;
         m_DepthToWorldRebuild = false;
         foreach(CameraEffectBase effectBase in m_CameraEffects)
@@ -187,6 +181,7 @@ public class PostEffectBase : CameraEffectBase
     const string S_ParentPath = "Hidden/PostEffect/";
     public Material m_Material { get; private set; }
     public override bool m_DoGraphicBlitz => true;
+
     protected override bool Init()
     {
         m_Material = CreateMaterial(this.GetType());
